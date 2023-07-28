@@ -1,0 +1,7 @@
+{
+    "sqltools.connections": [],
+    "DockerRun.DisableDockerrc": true,
+    "DockerRun.Containers": [
+        "dfd3b17faade"
+    ]
+}
