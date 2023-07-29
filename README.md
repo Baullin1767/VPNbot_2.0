@@ -7,6 +7,9 @@ Python:
   - aiogram
   - psycopg2
   - environs
+
 База данных:
   - PostgreSQL
+
+
 Docker compose
