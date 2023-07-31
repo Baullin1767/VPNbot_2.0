@@ -80,7 +80,10 @@ def get_trial(user_id:int):
 def get_invited(user_id:int) -> int:
     cursor.execute('SELECT invited FROM users WHERE user_id=%s', (user_id,))
     invited = cursor.fetchone()
-    return invited[0]
+    if invited != None:
+        return invited[0]
+    else:
+        return None
 
 def get_ref(user_id:int):
     cursor.execute('SELECT referal_id FROM users WHERE user_id=%s', (user_id,))
