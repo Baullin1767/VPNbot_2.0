@@ -24,25 +24,25 @@ async def on_startup(dispatcher):
 
 #Для тестов
 
-# from aiogram import types
-# from data_base import db
-# from datetime import datetime as dt
+from aiogram import types
+from data_base import db
+from datetime import datetime as dt
 
-# @dp.message_handler(commands=['check'])
-# async def start(mes: types.Message):
-#     db.add_date_sub(mes.from_user.id, dt.now().date())
+@dp.message_handler(commands=['check'])
+async def check(mes: types.Message):
+    db.add_date_sub(mes.from_user.id, dt.now().date())
 
 # @dp.message_handler(commands=['add_sale'])
-# async def start(mes: types.Message):
+# async def add_sale(mes: types.Message):
 #     db.add_invited(mes.from_user.id)
 #     await mes.answer("+1")
 
 # @dp.message_handler(commands=['get_invites'])
-# async def start(mes: types.Message):
+# async def get_invites(mes: types.Message):
 #     await mes.answer(db.get_invited(mes.from_user.id))
 
 # @dp.message_handler(commands=['get_refer'])
-# async def start(mes: types.Message):
+# async def get_refer(mes: types.Message):
 #     await mes.answer(db.get_ref(mes.from_user.id))
 
 if __name__ == '__main__':

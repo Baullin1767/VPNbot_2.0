@@ -1,5 +1,5 @@
 import psycopg2 as p2
-from datetime import datetime as dt
+from datetime import datetime as dt, timedelta as td
 import os
 import time
 
@@ -11,18 +11,18 @@ def connect_db():
     cursor = connect.cursor()
     # cursor.execute('DROP TABLE users')    
     cursor.execute(
-"CREATE TABLE IF NOT EXISTS users (user_id BIGINT PRIMARY KEY, date_of_arrival TEXT, mes_id BIGINT, date_sub TEXT, trial INT, \
-    invited INT, referal_id BIGINT, server TEXT)")
+"CREATE TABLE IF NOT EXISTS users (user_id BIGINT PRIMARY KEY, full_name TEXT, date_of_arrival TEXT, mes_id BIGINT,\
+date_sub TEXT, trial INT, invited INT, referal_id BIGINT, server TEXT)")
     time.sleep(10)
     connect.commit()
     return cursor, connect
     
 
 
-def add_user(user_id:int):
+def add_user(user_id:int, full_name:str):
     cursor.execute(
-        "INSERT INTO users (user_id, date_of_arrival, mes_id, date_sub, trial, invited, referal_id, server) VALUES \
-(%s, %s, %s, %s, %s, %s, %s, %s)", (user_id, dt.now().date(), 0, None, 0, 0, 0, ''))
+        "INSERT INTO users (user_id, full_name, date_of_arrival, mes_id, date_sub, trial, invited, referal_id, server)\
+VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)", (user_id, full_name, dt.now().date() + td(3), 0, None, 0, 0, 0, ''))
     connect.commit()
     
 def get_user_exist(user_id:int):
@@ -61,7 +61,7 @@ def add_refer(user_id:int, refer_id:int):
     
 def add_server(user_id:int, server:str):
     cursor.execute('UPDATE users SET server=%s WHERE user_id=%s', (server, user_id))
-    connect.commit()   
+    connect.commit()
 
 def get_users() -> list:
     cursor.execute('SELECT * FROM users')
@@ -84,10 +84,7 @@ def get_trial(user_id:int):
 def get_invited(user_id:int) -> int:
     cursor.execute('SELECT invited FROM users WHERE user_id=%s', (user_id,))
     invited = cursor.fetchone()
-    if invited != None:
-        return invited[0]
-    else:
-        return None
+    return invited[0]
 
 def get_ref(user_id:int):
     cursor.execute('SELECT referal_id FROM users WHERE user_id=%s', (user_id,))
@@ -96,3 +93,8 @@ def get_ref(user_id:int):
         return int(referal_id[0])
     else:
         return None
+    
+def get_full_name(user_id:int) -> int:
+    cursor.execute('SELECT full_name FROM users WHERE user_id=%s', (user_id,))
+    full_name = cursor.fetchone()
+    return full_name[0]

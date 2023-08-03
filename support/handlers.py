@@ -4,6 +4,8 @@ from support.kb import fast_answers
 from data_base import db
 from datetime import datetime as dt, timedelta
 
+from servises import google_sheets_servis
+
 def get_user_id_from_message(mes: Message):
     try:
         user_id = mes.text.split('#ID')[-1]
@@ -109,6 +111,8 @@ async def success_payment(call: CallbackQuery):
     
     if referal_id != None:
         db.add_invited(referal_id)
+    
+    await google_sheets_servis.update_table()
     
     
     

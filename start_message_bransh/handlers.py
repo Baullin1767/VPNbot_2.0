@@ -9,8 +9,7 @@ from servises import google_sheets_servis
 async def start(mes: Message):
     if not get_user_exist(mes.from_user.id) \
             and mes.from_user.id not in ADMINS:
-        add_user(mes.from_user.id)
-        await google_sheets_servis.update_table()
+        add_user(mes.from_user.id, mes.from_user.full_name)
         if ' ' in mes.text:
             try:
                 id_refer = int(mes.text.split()[1])
@@ -49,6 +48,7 @@ async def platforms(call: CallbackQuery):
     if call.data == "platforms_s":
         server = 'S'
     db.add_server(user_id, server)
+    await google_sheets_servis.update_table()
     await bot.send_message(ADMINS[0], f'{server}\n\n' +
                             f'#ID{user_id} ')
     await call.message.answer('Сейчас тебе нужно выбрать платформу:', reply_markup=platforms_kb)
