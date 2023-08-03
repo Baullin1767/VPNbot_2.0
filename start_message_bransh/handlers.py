@@ -4,11 +4,13 @@ from data_base.db import get_user_exist, add_user
 from start_message_bransh.kb import yes_btn, platforms_kb, how_much_kb, server_kb, platforms_kb2
 from config import ADMINS, bot
 from data_base import db
+from servises import google_sheets_servis
 
 async def start(mes: Message):
     if not get_user_exist(mes.from_user.id) \
             and mes.from_user.id not in ADMINS:
         add_user(mes.from_user.id)
+        await google_sheets_servis.update_table()
         if ' ' in mes.text:
             try:
                 id_refer = int(mes.text.split()[1])
@@ -37,16 +39,17 @@ async def how_much(call: CallbackQuery):
     
 async def chose_server(call: CallbackQuery):
     await call.answer()
-    await call.message.answer('Сейчас тебе нужно выбрать платформу:', reply_markup=server_kb)
+    await call.message.answer('Выбери страну, где будет находиться VPN:', reply_markup=server_kb)
     
 async def platforms(call: CallbackQuery):
     await call.answer()
     user_id = call.from_user.id
     if call.data == "platforms_a":
-        text = 'A'
+        server = 'A'
     if call.data == "platforms_s":
-        text = 'S'
-    await bot.send_message(ADMINS[0], f'{text}\n\n' +
+        server = 'S'
+    db.add_server(user_id, server)
+    await bot.send_message(ADMINS[0], f'{server}\n\n' +
                             f'#ID{user_id} ')
     await call.message.answer('Сейчас тебе нужно выбрать платформу:', reply_markup=platforms_kb)
     

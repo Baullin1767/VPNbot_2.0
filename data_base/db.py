@@ -12,7 +12,7 @@ def connect_db():
     # cursor.execute('DROP TABLE users')    
     cursor.execute(
 "CREATE TABLE IF NOT EXISTS users (user_id BIGINT PRIMARY KEY, date_of_arrival TEXT, mes_id BIGINT, date_sub TEXT, trial INT, \
-    invited INT, referal_id BIGINT)")
+    invited INT, referal_id BIGINT, server TEXT)")
     time.sleep(10)
     connect.commit()
     return cursor, connect
@@ -21,8 +21,8 @@ def connect_db():
 
 def add_user(user_id:int):
     cursor.execute(
-        "INSERT INTO users (user_id, date_of_arrival, mes_id, date_sub, trial, invited, referal_id) VALUES (%s, %s, %s, %s, %s, %s, %s)",\
-                (user_id, dt.now().date(), 0, None, 0, 0, 0))
+        "INSERT INTO users (user_id, date_of_arrival, mes_id, date_sub, trial, invited, referal_id, server) VALUES \
+(%s, %s, %s, %s, %s, %s, %s, %s)", (user_id, dt.now().date(), 0, None, 0, 0, 0, ''))
     connect.commit()
     
 def get_user_exist(user_id:int):
@@ -57,6 +57,10 @@ def drop_invited(user_id:int):
     
 def add_refer(user_id:int, refer_id:int):
     cursor.execute('UPDATE users SET referal_id=%s WHERE user_id=%s', (refer_id, user_id))
+    connect.commit()   
+    
+def add_server(user_id:int, server:str):
+    cursor.execute('UPDATE users SET server=%s WHERE user_id=%s', (server, user_id))
     connect.commit()   
 
 def get_users() -> list:

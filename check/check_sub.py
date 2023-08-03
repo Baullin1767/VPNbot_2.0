@@ -73,4 +73,4 @@ async def check():
                 await bot.send_message(user_id, text, parse_mode='Markdown')
                 await bot.send_message(ADMINS[0], f'{text}\n\n' +
                             f'#ID{user_id} ', parse_mode='Markdown')
-        await asyncio.sleep(1)
+        await asyncio.sleep(10*60)

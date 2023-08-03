@@ -1,5 +1,16 @@
 {
-    "sqltools.connections": [],
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "server": "0.0.0.0",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "postgres",
+            "username": "postgres",
+            "database": "postgres",
+            "password": "postgres"
+        }
+    ],
     "DockerRun.DisableDockerrc": true,
     "DockerRun.Containers": [
         "dfd3b17faade"
