@@ -5,27 +5,35 @@ import time
 
 def connect_db():
     global cursor, connect
-    connect = p2.connect(database = os.environ["DB_DATABASE"], user=os.environ["DB_USER"], \
-        password=os.environ["DB_PASSWORD"], host='vpn-postgres-container', port=int(os.environ['DB_PORT']),
-        keepalives=1, keepalives_idle=130, keepalives_interval=10, keepalives_count=15)
+    try:
+        connect = p2.connect(database = os.environ["DB_DATABASE"], user=os.environ["DB_USER"], \
+            password=os.environ["DB_PASSWORD"], host='vpn-postgres-container', port=int(os.environ['DB_PORT']),
+            keepalives=1, keepalives_idle=130, keepalives_interval=10, keepalives_count=15)
+    except p2.OperationalError:
+        time.sleep(10)
+        connect = p2.connect(database = os.environ["DB_DATABASE"], user=os.environ["DB_USER"], \
+            password=os.environ["DB_PASSWORD"], host='vpn-postgres-container', port=int(os.environ['DB_PORT']),
+            keepalives=1, keepalives_idle=130, keepalives_interval=10, keepalives_count=15)
+        
     cursor = connect.cursor()
     # cursor.execute('DROP TABLE users')    
     cursor.execute(
 "CREATE TABLE IF NOT EXISTS users (user_id BIGINT PRIMARY KEY, full_name TEXT, date_of_arrival TEXT, mes_id BIGINT,\
 date_sub TEXT, trial INT, invited INT, referal_id BIGINT, server TEXT)")
-    time.sleep(10)
     connect.commit()
     return cursor, connect
     
 
 
 def add_user(user_id:int, full_name:str):
+    connect_db()
     cursor.execute(
         "INSERT INTO users (user_id, full_name, date_of_arrival, mes_id, date_sub, trial, invited, referal_id, server)\
 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)", (user_id, full_name, dt.now().date() + td(3), 0, None, 0, 0, 0, ''))
     connect.commit()
     
 def get_user_exist(user_id:int):
+    connect_db()
     cursor.execute('SELECT * FROM users WHERE user_id=%s', (user_id,))
     mes_id = cursor.fetchone()
     if mes_id:
@@ -35,40 +43,49 @@ def get_user_exist(user_id:int):
 
     
 def add_last_admin_id(user_id:int, mes_id:int):
+    connect_db()
     cursor.execute('UPDATE users SET mes_id=%s WHERE user_id=%s', (mes_id, user_id))
     connect.commit()   
     
 def add_date_sub(user_id:int, date):
+    connect_db()
     cursor.execute('UPDATE users SET date_sub=%s WHERE user_id=%s', (date, user_id))
     connect.commit()   
     
 def add_trial(user_id:int, trial:bool):
+    connect_db()
     cursor.execute('UPDATE users SET trial=%s WHERE user_id=%s', (int(trial), user_id))
     connect.commit()
     
 def add_invited(user_id:int):
+    connect_db()
     refers = get_invited(user_id)
     cursor.execute('UPDATE users SET invited=%s WHERE user_id=%s', (refers+1, user_id))
     connect.commit()   
     
 def drop_invited(user_id:int):
+    connect_db()
     cursor.execute('UPDATE users SET invited=%s WHERE user_id=%s', (0, user_id))
     connect.commit()  
     
 def add_refer(user_id:int, refer_id:int):
+    connect_db()
     cursor.execute('UPDATE users SET referal_id=%s WHERE user_id=%s', (refer_id, user_id))
     connect.commit()   
     
 def add_server(user_id:int, server:str):
+    connect_db()
     cursor.execute('UPDATE users SET server=%s WHERE user_id=%s', (server, user_id))
     connect.commit()
 
 def get_users() -> list:
+    connect_db()
     cursor.execute('SELECT * FROM users')
     users = cursor.fetchall()
     return users
 
 def get_last_admin_id(user_id:int):
+    connect_db()
     cursor.execute('SELECT mes_id FROM users WHERE user_id=%s', (user_id,))
     mes_id = cursor.fetchone()
     if mes_id != 0:
@@ -77,16 +94,19 @@ def get_last_admin_id(user_id:int):
         return None
 
 def get_trial(user_id:int):
+    connect_db()
     cursor.execute('SELECT trial FROM users WHERE user_id=%s', (user_id,))
     trial = cursor.fetchone()
     return bool(trial[0])
 
 def get_invited(user_id:int) -> int:
+    connect_db()
     cursor.execute('SELECT invited FROM users WHERE user_id=%s', (user_id,))
     invited = cursor.fetchone()
     return invited[0]
 
 def get_ref(user_id:int):
+    connect_db()
     cursor.execute('SELECT referal_id FROM users WHERE user_id=%s', (user_id,))
     referal_id = cursor.fetchone()
     if referal_id != 0:
@@ -95,6 +115,7 @@ def get_ref(user_id:int):
         return None
     
 def get_full_name(user_id:int) -> int:
+    connect_db()
     cursor.execute('SELECT full_name FROM users WHERE user_id=%s', (user_id,))
     full_name = cursor.fetchone()
     return full_name[0]

@@ -9,7 +9,10 @@ from servises import google_sheets_servis
 async def start(mes: Message):
     if not get_user_exist(mes.from_user.id) \
             and mes.from_user.id not in ADMINS:
-        add_user(mes.from_user.id, mes.from_user.full_name)
+        if mes.from_user.full_name != None:
+            add_user(mes.from_user.id, mes.from_user.full_name)
+        else:
+            add_user(mes.from_user.id, mes.from_user.user_name)
         if ' ' in mes.text:
             try:
                 id_refer = int(mes.text.split()[1])
@@ -17,7 +20,7 @@ async def start(mes: Message):
             except ValueError:
                 pass
             
-    await mes.answer(f'''Привет, {mes.from_user.full_name}, я - бот, с помощью которого ты сможешь подключить классный VPN. Почему он классный? Рассказываю:
+    await mes.answer(f'''Привет, {mes.from_user.full_name if mes.from_user.full_name else mes.from_user.user_name}, я - бот, с помощью которого ты сможешь подключить классный VPN. Почему он классный? Рассказываю:
 
 1. Его не заблокируют - принцип работы нашего сервиса отличается от стандартных VPN, которые до этого были у тебя
 

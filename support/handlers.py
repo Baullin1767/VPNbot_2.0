@@ -17,7 +17,7 @@ def get_user_id_from_message(mes: Message):
 async def send_to_support(mes: Message):
     if not db.get_user_exist(mes.from_user.id) \
             and mes.from_user.id not in ADMINS:
-        db.add_user(mes.from_user.id)
+        db.add_user(mes.from_user.id, mes.from_user.full_name)
     if mes.reply_to_message and str(mes.from_user.id) in ADMINS:
         user_id = get_user_id_from_message(mes.reply_to_message)
         if mes.content_type == 'photo':
@@ -31,7 +31,7 @@ async def send_to_support(mes: Message):
     else:
         user_id = mes.from_user.id
         caption = f'[{mes.from_user.full_name}]'+\
-(f'(t.me/{mes.from_user.username}) ' if mes.from_user.username else '') + f'#ID{user_id}'
+(f'(t.me/{mes.from_user.username}) ' if mes.from_user.username else '') + f' #ID{user_id}'
         if db.get_last_admin_id(user_id) != 0:
             if mes.content_type == 'photo':
                 await bot.send_photo(ADMINS[0], mes.photo[-1]['file_id'], caption=f'{mes.caption}\n\n' +

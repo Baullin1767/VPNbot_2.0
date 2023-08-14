@@ -27,16 +27,18 @@ async def on_startup(dispatcher):
 from aiogram import types
 from data_base import db
 from datetime import datetime as dt
+from servises import google_sheets_servis
 
 @dp.message_handler(commands=['check'])
 async def check(mes: types.Message):
     db.add_date_sub(mes.from_user.id, dt.now().date())
 
-# @dp.message_handler(commands=['add_sale'])
-# async def add_sale(mes: types.Message):
-#     db.add_invited(mes.from_user.id)
-#     await mes.answer("+1")
 
+@dp.message_handler(commands=['update'])
+async def add_sale(mes: types.Message):
+    await google_sheets_servis.update_table()
+    
+    
 # @dp.message_handler(commands=['get_invites'])
 # async def get_invites(mes: types.Message):
 #     await mes.answer(db.get_invited(mes.from_user.id))
